@@ -1,13 +1,14 @@
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from pyexpat.errors import messages
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework.decorators import api_view
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView,CreateAPIView
-from watchlist_app.api.v1.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
-from watchlist_app.models import WatchList, StreamPlatform, Review
+
+from watchlist_app.api.v1.serializers import WatchListSerializer, StreamPlatformSerializer
+from watchlist_app.models import WatchList, StreamPlatform
 
 
 # Create your views here.
@@ -49,6 +50,38 @@ class MovieListAV(APIView):
         else:
             print("INVALID")
             return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+
+class MovieDetailAV(APIView):
+    def get(self, request, pk):
+        movie = get_object_or_404(WatchList, id=pk)
+        serializer = WatchListSerializer(movie)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        movie = get_object_or_404(WatchList, id=pk)
+        serializer = WatchListSerializer(movie, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        movie = get_object_or_404(WatchList, id=pk)
+        movie.delete()
+        return Response({"message": "Movie deleted"},status = status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, pk):
+        movie = get_object_or_404(WatchList, id=pk)
+        serializer = WatchListSerializer(movie, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class StreamPlatformAV(APIView):
@@ -99,11 +132,12 @@ class StreamDetailAV(APIView):
         return Response({"message": "Movie deleted"},status = status.HTTP_204_NO_CONTENT)
 
 
-class MovieDetailAV(APIView):
-    def get(self, request, pk):
-        movie = get_object_or_404(WatchList, id=pk)
-        serializer = WatchListSerializer(movie)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class ReviewListAV(mixins.ListModelMixin,mixins.CreateModelMixin,GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get(self,request,*args,**kwargs):
+        return self.list(request,*args,**kwargs)
 
     def put(self, request, pk):
         movie = get_object_or_404(WatchList, id=pk)
@@ -129,9 +163,6 @@ class MovieDetailAV(APIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
-class ReviewList(ListAPIView,CreateAPIView):
-    serializer_class = ReviewSerializer
-    queryset = Review.object.all()
 
 
 # @api_view(['GET','PUT','DELETE','PATCH'])

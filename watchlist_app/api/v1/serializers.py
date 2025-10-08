@@ -23,7 +23,7 @@ class WatchListSerializer(serializers.ModelSerializer):
     def get_name_length(self, obj):
         return len(obj.title)
 
-class StreamPlatformSerializer(serializers.HyperlinkedModelSerializer):
+class StreamPlatformSerializer(serializers.ModelSerializer):
     watchlist_stream_platform = WatchListSerializer(read_only=True, many=True)
     # watchlist_stream_platform = serializers.StringRelatedField(read_only=True, many=True)
     # watchlist_stream_platform = serializers.PrimaryKeyRelatedField(read_only=True, many=True)

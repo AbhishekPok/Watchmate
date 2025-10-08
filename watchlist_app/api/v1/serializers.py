@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from watchlist_app.models import WatchList, StreamPlatform
+from watchlist_app.models import WatchList, StreamPlatform, Review
 
 
 # def no_special_characters(value):
@@ -32,6 +32,13 @@ class StreamPlatformSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = StreamPlatform
+        fields = "__all__"
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
         fields = "__all__"
 
 

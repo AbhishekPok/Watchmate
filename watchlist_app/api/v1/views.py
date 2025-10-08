@@ -6,9 +6,9 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from watchlist_app.api.v1.serializers import WatchListSerializer, StreamPlatformSerializer
-from watchlist_app.models import WatchList, StreamPlatform
+from rest_framework.generics import ListAPIView,CreateAPIView
+from watchlist_app.api.v1.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
+from watchlist_app.models import WatchList, StreamPlatform, Review
 
 
 # Create your views here.
@@ -163,6 +163,9 @@ class ReviewListAV(mixins.ListModelMixin,mixins.CreateModelMixin,GenericAPIView)
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
+class ReviewList(ListAPIView,CreateAPIView):
+    serializer_class = ReviewSerializer
+    queryset = Review.object.all()
 
 
 # @api_view(['GET','PUT','DELETE','PATCH'])

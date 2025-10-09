@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from watchlist_app.models import WatchList, StreamPlatform, Review
+from django.contrib.auth.models import User
 
 
 # def no_special_characters(value):
@@ -34,9 +35,12 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
         model = StreamPlatform
         fields = "__all__"
 
-
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id','username','email')
 class ReviewSerializer(serializers.ModelSerializer):
-
+    user = UserSerializer(read_only=True)
     class Meta:
         model = Review
         fields = "__all__"

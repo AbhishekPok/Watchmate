@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from pyexpat.errors import messages
@@ -8,8 +9,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView,CreateAPIView
+# from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from watchlist_app.api.v1.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from watchlist_app.models import WatchList, StreamPlatform, Review
+from .permissions import IsAdminUserOrReadOnly, IsReviewUserOrReadOnly
 
 
 # Create your views here.
@@ -35,7 +38,18 @@ from watchlist_app.models import WatchList, StreamPlatform, Review
     #movies_list = {"movies": list(movies.values())}
     #return JsonResponse(movies_list)
 
+class ReviewModelViewSet(viewsets.ModelViewSet):
+        queryset =Review.objects.all()
+        serializer_class = ReviewSerializer
+        permission_classes = [IsReviewUserOrReadOnly]
 
+        def perform_create(self, serializer):
+            user = self.request.user
+            watchlist = serializer.validated_data.get('watchlist')
+            if Review.objects.filter(user = user, watchlist = watchlist).exists():
+                raise ValidationError("Review ALready Exists")
+            return serializer.save(user=user)
+        
 class MovieListAV(APIView):
     def get(self, request):
         movies = WatchList.objects.all()
@@ -176,9 +190,9 @@ class ReviewListAV(mixins.ListModelMixin,mixins.CreateModelMixin,GenericAPIView)
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
-class ReviewList(ListAPIView,CreateAPIView):
-    serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
+# class ReviewList(ListAPIView,CreateAPIView):
+#     serializer_class = ReviewSerializer
+#     queryset = Review.objects.all()
 
 
 # @api_view(['GET','PUT','DELETE','PATCH'])

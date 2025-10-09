@@ -1,12 +1,12 @@
 from django.urls import path
 from watchlist_app.api.v1 import views
 from rest_framework import routers
-from watchlist_app.api.v1.views import ReviewListViewSet, StreamPlatformMovieViewSet
-review_list = views.ReviewListViewSet.as_view({'get':'list'})
-review_detail = views.ReviewListViewSet.as_view({'get':'retrieve'})
+from watchlist_app.api.v1.views import ReviewModelViewSet, StreamPlatformMovieViewSet
+# review_list = views.ReviewListViewSet.as_view({'get':'list'})
+# review_detail = views.ReviewListViewSet.as_view({'get':'retrieve'})
 
 router = routers.DefaultRouter()
-router.register("review", ReviewListViewSet, basename="review")
+router.register("review", ReviewModelViewSet, basename="review")
 router.register("stream", StreamPlatformMovieViewSet, basename="stream")
 
 urlpatterns = [
@@ -20,6 +20,6 @@ urlpatterns = [
     # path("review/<int:pk>/", views.ReviewDetailAV.as_view(), name="review_detail"),
 
 
-    path("review/",review_list, name="review_list"),
-    path("review/<int:pk>/", review_detail, name="review_detail"),
+    # path("review/",review_list, name="review_list"),
+    # path("review/<int:pk>/", review_detail, name="review_detail"),
 ] + router.urls

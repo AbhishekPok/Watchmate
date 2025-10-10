@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ["*"]
 THIRD_PARTY_APPS = [
     "rest_framework",
     "corsheaders",
+    'rest_framework.authtoken'
 ]
 
 LOCAL_APPS = [
@@ -134,8 +135,10 @@ CORS_ORIGIN_ALLOW_ALL= True
 CORS_ALLOW_CREDENTIALS = True
 
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.AllowAny',
-#     ]
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+    ]
+}

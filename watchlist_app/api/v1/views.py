@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView,CreateAPIView
-# from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from watchlist_app.api.v1.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from watchlist_app.models import WatchList, StreamPlatform, Review
 from .permissions import IsAdminUserOrReadOnly, IsReviewUserOrReadOnly
@@ -41,7 +41,7 @@ from .permissions import IsAdminUserOrReadOnly, IsReviewUserOrReadOnly
 class ReviewModelViewSet(viewsets.ModelViewSet):
         queryset =Review.objects.all()
         serializer_class = ReviewSerializer
-        permission_classes = [IsReviewUserOrReadOnly]
+        permission_classes = [IsAuthenticated]
 
         def perform_create(self, serializer):
             user = self.request.user
